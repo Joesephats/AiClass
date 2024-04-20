@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.AI;
 
 public class EnemyManager : MonoBehaviour
@@ -14,6 +15,11 @@ public class EnemyManager : MonoBehaviour
     [SerializeField] int enemyPatrolRange = 5;
 
     [SerializeField] int health = 3;
+    [SerializeField] GameObject healthBar;
+    [SerializeField] Image healthBarImage;
+    [SerializeField] float sightRange = 15; 
+
+    GameObject camera;
 
     // Start is called before the first frame update
     void Start()
@@ -22,11 +28,16 @@ public class EnemyManager : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         isAlive = true;
         hasLineOfSight = false;
+
+        camera = GameObject.FindGameObjectWithTag("MainCamera");
     }
 
     // Update is called once per frame
     void Update()
     {
+        healthBar.transform.rotation = camera.transform.rotation;
+        healthBar.transform.position = transform.position + new Vector3(0,1,1.5f);
+
         Ray ray = new Ray(transform.position, playerObject.transform.position - transform.position);
         RaycastHit hit;
 
@@ -42,7 +53,7 @@ public class EnemyManager : MonoBehaviour
             }
         }
 
-        if ((playerObject.transform.position - transform.position).magnitude < 10 && hasLineOfSight)
+        if ((playerObject.transform.position - transform.position).magnitude < sightRange && hasLineOfSight)
         {
             agent.speed = 6.5f;
             agent.SetDestination(playerObject.transform.position);
@@ -55,16 +66,20 @@ public class EnemyManager : MonoBehaviour
 
         if (!isAlive)
         {
+            playerObject.GetComponent<PlayerController>().UpdateKillCounter();
             Destroy(gameObject);
         }
+
     }
 
-    private void OnCollisionEnter(Collision other)
+
+    void OnCollisionEnter(Collision other)
     {
+        Debug.Log("Collision");
         if (other.gameObject.tag == "Player")
         {
+            Debug.Log("Collision Player");
             other.gameObject.GetComponent<PlayerController>().DamagePlayer(1);
-            StartCoroutine(AttackLag());
         }
     }
 
@@ -98,13 +113,13 @@ public class EnemyManager : MonoBehaviour
             StopAllCoroutines();
         }
     }
-    IEnumerator AttackLag()
-    {
-        yield return new WaitForSeconds(1);
-    }
 
     public void DamageEnemy(int damage)
     {
+        Debug.Log("Damage Enemy");
+
+        healthBarImage.fillAmount -= .334f;
+
         health -= damage;
 
         if (health < 1)

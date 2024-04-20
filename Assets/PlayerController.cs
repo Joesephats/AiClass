@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.AI;
+using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
@@ -10,13 +12,16 @@ public class PlayerController : MonoBehaviour
     NavMeshAgent agent;
 
     [SerializeField] GameObject bulletPrefab;
-
+    [SerializeField] Image healthBarImage;
     [SerializeField] GameObject[] heartsUI;
+    [SerializeField] GameObject gameEndPanel;
+    [SerializeField] TMP_Text gameEndMessage;
 
     [SerializeField] int bulletSpeed = 600;
 
     int playerHealth = 3;
     bool isAlive;
+    int kills;
 
     // Start is called before the first frame update
     void Start()
@@ -24,6 +29,7 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         agent = GetComponent<NavMeshAgent>();
         isAlive = true;
+        gameEndPanel.SetActive(false);
     }
 
     // Update is called once per frame
@@ -35,6 +41,17 @@ public class PlayerController : MonoBehaviour
         if (!isAlive)
         {
             //Game Over
+            gameEndPanel.SetActive(true);
+            gameEndMessage.text = "Game Over";
+            gameObject.GetComponent<PlayerController>().enabled = false;
+        }
+
+        if (kills >= 4)
+        {
+            //game win
+            gameEndPanel.SetActive(true);
+            gameEndMessage.text = "Victory!";
+            gameObject.GetComponent<PlayerController>().enabled = false;
         }
     }
 
@@ -74,7 +91,8 @@ public class PlayerController : MonoBehaviour
     {
         Debug.Log("Damage Player");
 
-        heartsUI[playerHealth].SetActive(false);
+        //heartsUI[playerHealth - 1].SetActive(false);
+        healthBarImage.fillAmount -= .334f; ;
 
         playerHealth -= damage;
 
@@ -82,5 +100,10 @@ public class PlayerController : MonoBehaviour
         {
             isAlive = false;
         }
+    }
+
+    public void UpdateKillCounter()
+    {
+        kills += 1;
     }
 }
