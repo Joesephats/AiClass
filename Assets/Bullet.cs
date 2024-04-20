@@ -4,18 +4,9 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+    //When a bullet collides with an object other than the player, destroy itself.
+    //If that object is an enemy, call DamageEnemy on enemy script
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Enemy")

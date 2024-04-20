@@ -1765,7 +1765,7 @@ MonoBehaviour:
   - {fileID: 951427804}
   gameEndPanel: {fileID: 827220509}
   gameEndMessage: {fileID: 97527935}
-  bulletSpeed: 1000
+  bulletSpeed: 1500
 --- !u!54 &862662095
 Rigidbody:
   m_ObjectHideFlags: 0
